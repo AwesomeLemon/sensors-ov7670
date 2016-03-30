@@ -18,6 +18,7 @@ MEDIA_SENSOR_PATH=/etc/trik/sensors/$MEDIA_SENSOR_NAME
 MEDIA_SENSOR_PID=/var/run/dsp.pid
 MEDIA_SENSOR_LOG=/var/log/dsp.log
 MEDIA_SENSOR_CMD=status
+MEDIA_SENSOR_PARAMS=""
 VERBOSE_LVL=1
 DEBUG='> /dev/null 2>&1'
   
@@ -75,9 +76,10 @@ parse_flags() {
         MEDIA_SENSOR_CMD=$key
         ;;
       *)
-        log "unknown option: $key" 0
-        log "usage:\n\t-n, --name\t- sensor name\n\t-p, --port\t- video port {0,1,2}\n\t-v, --verbose\t- verbose level {0,1,2}" 0
-        exit 1
+        #log "unknown option: $key" 0
+        #log "usage:\n\t-n, --name\t- sensor name\n\t-p, --port\t- video port {0,1,2}\n\t-v, --verbose\t- verbose level {0,1,2}" 0
+        #exit 1
+        MEDIA_SENSOR_PARAMS+="$key "
         ;;
     esac
     shift
@@ -123,7 +125,7 @@ do_start() {
   cd $MEDIA_SENSOR_PATH
   clean_caches_plug
   init_camera
-  start-stop-daemon -Svb -p $MEDIA_SENSOR_PID -m -a /bin/bash -- -c "exec $MEDIA_SENSOR_PATH/$MEDIA_SENSOR_NAME $DEFAULT_OPS >$MEDIA_SENSOR_LOG 2>&1"
+  start-stop-daemon -Svb -p $MEDIA_SENSOR_PID -m -a /bin/bash -- -c "exec $MEDIA_SENSOR_PATH/$MEDIA_SENSOR_NAME $DEFAULT_OPS $MEDIA_SENSOR_PARAMS >$MEDIA_SENSOR_LOG 2>&1"
   sleep 1    # wait for exposure stabilized
   fix_camera # fix exposure
   #check if actualy started
